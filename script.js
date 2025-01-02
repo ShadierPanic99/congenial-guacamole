@@ -15,23 +15,30 @@ function calculateHours(input) {
         const workBeforeLunch = (lunchStartTime - startTime) / 60000;
         const workAfterLunch = (endTime - lunchEndTime) / 60000;
         const totalMinutes = workBeforeLunch + workAfterLunch;
-        const regularMinutes = 8 * 60; // 8 horas em minutos
 
-        // Formatar o tempo trabalhado
+        // Jornada normal de 8 horas
+        const regularMinutes = 8 * 60;
+
+        // Calcular horas extras
+        let overtimeMinutes = 0;
+        if (totalMinutes > regularMinutes) {
+            overtimeMinutes = totalMinutes - regularMinutes;
+        }
+
+        // Aplicar o multiplicador de horas extras (1.5x para horas normais ou 2x para feriados)
+        if (isHoliday) {
+            overtimeMinutes *= 2; // Se for feriado, o multiplicador é 2
+        } else {
+            overtimeMinutes *= 1.5; // Caso contrário, é 1.5
+        }
+
+        // Formatar as horas trabalhadas e as horas extras
         const workedHours = formatTime(totalMinutes);
         workedHoursCell.textContent = workedHours;
 
-        let overtimeMinutes = 0;
-        if (totalMinutes > regularMinutes) {
-            // Calcula horas extras normais (1.5x) ou feriado (2x)
-            const overtimeRate = isHoliday ? 2 : 1.5;
-            overtimeMinutes = (totalMinutes - regularMinutes) * overtimeRate;
-            overtimeMinutes = Math.max(overtimeMinutes, 0); // Garante que o valor de horas extras não seja negativo
-            const overtime = formatTime(overtimeMinutes);
-            extraHoursCell.textContent = overtime;
-        } else {
-            extraHoursCell.textContent = '00:00:00';
-        }
+        // Formatar as horas extras
+        const overtime = formatTime(overtimeMinutes);
+        extraHoursCell.textContent = overtime;
 
         updateTotals();
     } else {
