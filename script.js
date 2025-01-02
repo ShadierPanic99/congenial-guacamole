@@ -5,23 +5,14 @@ window.onload = function () {
 function updateTable() {
     const monthSelect = document.getElementById('monthSelect');
     const month = parseInt(monthSelect.value, 10);
-    console.log("Mês selecionado:", month);
 
     if (isNaN(month) || month < 1 || month > 12) {
         console.error("Mês inválido selecionado.");
         return;
     }
 
-    // Ajustar o mês para começar do 0 (Janeiro é 0, Dezembro é 11)
-    const daysInMonth = new Date(2024, month - 1, 0).getDate();
-    console.log("Dias no mês:", daysInMonth);
-
+    const daysInMonth = new Date(2024, month, 0).getDate();
     const tableBody = document.getElementById('timeSheetBody');
-    if (!tableBody) {
-        console.error("Elemento 'timeSheetBody' não encontrado.");
-        return;
-    }
-
     tableBody.innerHTML = ''; // Limpa a tabela
 
     // Preencher os dias no mês
@@ -80,23 +71,26 @@ function calculateHours(input) {
         const lunchEndTime = new Date(`1970-01-01T${lunchEnd.value}:00`);
         const endTime = new Date(`1970-01-01T${end.value}:00`);
 
+        // Calcular o tempo trabalhado antes e depois do almoço
         const workBeforeLunch = (lunchStartTime - startTime) / 60000;
         const workAfterLunch = (endTime - lunchEndTime) / 60000;
         const totalMinutes = workBeforeLunch + workAfterLunch;
         const regularMinutes = 8 * 60;
 
+        // Formatar o tempo trabalhado
         const workedHours = formatTime(totalMinutes);
         workedHoursCell.textContent = workedHours;
 
         let overtimeMinutes = 0;
         if (totalMinutes > regularMinutes || isHoliday) {
-            const overtimeRate = isHoliday ? 2 : 1.5;
+            const overtimeRate = isHoliday ? 2 : 1.5; // Horas extras nos feriados têm uma taxa maior
             overtimeMinutes = (totalMinutes - regularMinutes) * overtimeRate;
             const overtime = formatTime(overtimeMinutes > 0 ? overtimeMinutes : 0);
             extraHoursCell.textContent = overtime;
         } else {
             extraHoursCell.textContent = '00:00:00';
         }
+
         updateTotals();
     } else {
         workedHoursCell.textContent = '00:00:00';
