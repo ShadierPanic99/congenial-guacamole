@@ -114,6 +114,19 @@ function updateTotals() {
 
     document.getElementById('totalWorked').textContent = formatTime(totalWorkedMinutes);
     document.getElementById('totalOvertime').textContent = formatTime(totalOvertimeMinutes);
+
+    // Calcular o total a receber
+    calculateEarnings();
+}
+
+function calculateEarnings() {
+    const monthlySalary = parseFloat(document.getElementById('monthlySalary').value) || 0;
+    const totalOvertimeMinutes = parseTime(document.getElementById('totalOvertime').textContent);
+    const hourlyRate = monthlySalary / (22 * 8); // Considerando 22 dias úteis de 8 horas
+    const overtimePay = (totalOvertimeMinutes / 60) * hourlyRate * 1.5; // Hora extra com acréscimo de 50%
+    const totalEarnings = monthlySalary + overtimePay;
+
+    document.getElementById('totalEarnings').textContent = `R$ ${totalEarnings.toFixed(2)}`;
 }
 
 function parseTime(time) {
